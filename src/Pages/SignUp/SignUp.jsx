@@ -4,11 +4,12 @@ import { useForm } from "react-hook-form";
 import { AuthContext } from "../../Providers/Authproviders";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import SocialLogin from "../Shared/SocialLogin/SocialLogin";
 
 
 const SignUp = () => {
    const navigate = useNavigate()
-    const { register,reset, handleSubmit, formState: { errors } } = useForm();
+    const { register,handleSubmit, formState: { errors } } = useForm();
     const {createUser,updateUserProfile} = useContext(AuthContext)
 
     const onSubmit = data => {
@@ -19,14 +20,27 @@ const SignUp = () => {
             console.log(loggedUser)
           updateUserProfile(data.name, data.photoUrl)
           .then(()=> {
-            console.log('user profile info updated')
-            reset()
-            Swal.fire(
-              'Good job!',
-              'User Created Successfully!',
-              'success'
-            )
-            navigate('/')
+          const saveUser = {name : data.name, email : data.email}
+            fetch('http://localhost:5000/users',{
+              method : 'POST',
+              headers : {
+                'content-type' : 'application/json'
+              },
+              body : JSON.stringify(saveUser)
+            })
+            .then(res => res.json())
+            .then(data => {
+              if(data.insertedId){
+                Swal.fire(
+                  'Good job!',
+                  'User Created Successfully!',
+                  'success'
+                )
+                navigate('/')
+              }
+            })
+         
+           
           })
           .catch(error => console.log(error))
         })
@@ -94,6 +108,8 @@ const SignUp = () => {
         </div>
       </form>
       <p><small>Already have an account <Link to='/login'>Login</Link> </small></p>
+      <SocialLogin></SocialLogin>
+  
     </div>
   </div>
        </div>

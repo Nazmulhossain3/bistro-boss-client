@@ -8,6 +8,8 @@ import { AuthContext } from "../../Providers/Authproviders";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
+import SocialLogin from "../Shared/SocialLogin/SocialLogin";
+import axios from "axios";
 
 
 const Login = () => {
@@ -52,17 +54,25 @@ const Login = () => {
     .then(result => {
         const user = result.user 
         console.log(user)
-        Swal.fire({
-            title: 'Login Successfull',
-            showClass: {
-              popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-              popup: 'animate__animated animate__fadeOutUp'
-            }
-          })
+        axios.post('http://localhost:5000/jwt', {email : user.email})
+                .then(data => {
+                    console.log(data.data.token)
 
-           navigate(from , {replace : true})
+                    localStorage.setItem('access-token', data.data.token)
+                    Swal.fire({
+                      title: 'Login Successfull',
+                      showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                      },
+                      hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                      }
+                    })
+          
+                     navigate(from , {replace : true})
+                })
+            
+        
     })
   };
 
@@ -133,6 +143,8 @@ const Login = () => {
             </div>
           </form>
           <p><small>New Here ? <Link to='/signup'>Create a New Account</Link></small></p>
+          <SocialLogin></SocialLogin>
+      
         </div>
       </div>
     </div>
