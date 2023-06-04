@@ -18,7 +18,7 @@ const { isLoading,refetch, data : cart = []} = useQuery({
       
       }
         const res = await axoisSecure(`/carts?email=${user?.email}`)
-        console.log('res from axois', res)
+      
         return res.data;
         
     },
